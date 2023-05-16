@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [ApiController] // [ApiController] attribute can be applied to a controller class to enable API-specific behaviors
-    [Route("api/[controller]")] // Route Specifies URL pattern for a controller or action
-    public class UsersController : ControllerBase
+    //[ApiController] // [ApiController] attribute can be applied to a controller class to enable API-specific behaviors
+    //[Route("api/[controller]")] // Route Specifies URL pattern for a controller or action
+    public class UsersController : BaseApiController
     {
         private readonly DataContext _context;
         public UsersController(DataContext context)

@@ -13,5 +13,9 @@ namespace API.Entities
         public int Id { get; set; } //Property name should be in titlecase 
 
         public string UserName { get; set; } //using getter setter shorthand property
+
+        public byte[] PasswordHash { get; set; } //List is returned when we calculate the hash
+
+        public byte[] PasswordSalt { get; set; }
     }
 }
