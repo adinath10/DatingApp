@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ namespace API.Controllers
         }
 
         // https://localhost:5000/api/users
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers(){
             // ActionResult method works as a return type of any controller method in the MVC.
@@ -27,6 +29,7 @@ namespace API.Controllers
         }
 
         // https://localhost:5000/api/users/1
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<AppUser>> GetUser(int id){
             // ActionResult method works as a return type of any controller method in the MVC.
