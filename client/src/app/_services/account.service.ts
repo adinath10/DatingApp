@@ -10,30 +10,46 @@ import { ReplaySubject } from 'rxjs';
 export class AccountService {
 
   baseUrl = "https://localhost:5000/api/";
+
+  //BehaviorSubject can hold only last data emitted in the memory whereas ReplaySubject can hold in memory as much as we define in the bufferSize.
+  //The ReplaySubject is initialized with a buffer size of 1, which means it will store the last 1 values that have been passed to it. 
   private currentUserSource = new ReplaySubject<User>(1);
+
   currentUser$ = this.currentUserSource.asObservable();
 
-  constructor(private http : HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  login(model : any){
+  login(model: any) {
     return this.http.post<User>(this.baseUrl + "account/login", model).pipe(
-      map((response : User) => {
-        
+      map((response: User) => {
+
         const user = response;
 
-        if(user){
-          localStorage.setItem('user',JSON.stringify(user));
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
           this.currentUserSource.next(user);
         }
       })
     )
   }
 
-  setCurrentUser(user : User){
+  register(model: any) {
+    return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
+      map((user : User) => {
+        if(user){
+          localStorage.setItem('user', JSON.stringify(user));
+          this.currentUserSource.next(user);
+        }
+        // return user
+      })
+    )
+  }
+
+  setCurrentUser(user: User) {
     this.currentUserSource.next(user);
   }
 
-  logout(){
+  logout() {
     localStorage.removeItem('user')
     this.currentUserSource.next(null!);
   }
