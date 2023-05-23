@@ -16,7 +16,10 @@ namespace API
             CreateHostBuilder(args).Build().Run();
         }
 
+        // creates an instance of IHostBuilder which hosts a web application
         public static IHostBuilder CreateHostBuilder(string[] args) =>
+        // By using the CreateDefaultBuilder method, we will get inbuilt support for Dependency Injection.
+        // using CreateDefaultBuilder method, we also get logging support & also loads the applications configurations.
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

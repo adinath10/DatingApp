@@ -40,6 +40,8 @@ namespace API
             services.AddApplicationServices(_config);
             // for injecting the services or class
             services.AddControllers();
+            // Cross-origin resource sharing (CORS) is a browser mechanism which enables controlled 
+            // access to resources located outside of a given domain
             services.AddCors();
             services.AddIdentityServices(_config);
             // services.AddSwaggerGen(c =>

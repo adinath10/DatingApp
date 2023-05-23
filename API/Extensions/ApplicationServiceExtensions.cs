@@ -13,6 +13,8 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config){
             // for Dependency Injection
+            // With a scoped service we get the same instance within the scope of a given http request 
+            // but a new instance across different http requests.
             services.AddScoped<ITokenService, TokenService>();
             services.AddDbContext<DataContext>(options =>
             {

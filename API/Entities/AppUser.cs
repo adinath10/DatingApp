@@ -6,6 +6,7 @@ using API.Extensions;
 
 namespace API.Entities
 {
+    // Entities is for method return type
     // Entity is abstraction of physical thing.
     // In our case user is physical thing
     // It contains user related properties

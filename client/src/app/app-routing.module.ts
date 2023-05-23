@@ -14,6 +14,8 @@ const routes: Routes = [
   {path:'', component: HomeComponent},
   {
     path:'',
+    // Guards and/or resolvers will always run when a route is activated or deactivated. 
+    // When a route is unchanged, the default behavior is the same as paramsChange.
     runGuardsAndResolvers : 'always',
     canActivate: [AuthGuard],
     children: [

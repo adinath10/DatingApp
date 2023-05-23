@@ -24,6 +24,7 @@ namespace API.Middleware
             _next = next;
         }
 
+        // HttpContext encapsulates all information about an individual HTTP request and response.
         public async Task InvokeAsync(HttpContext context){
             try
             {

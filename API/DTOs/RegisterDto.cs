@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 // DTO stands for Data Transfer objects
 namespace API.DTOs
 {
+    // DTO is for request object
     // single object with multiple properties for reusing the code
     public class RegisterDto
     {
