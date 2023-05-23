@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -11,9 +13,25 @@ namespace API
 {
     public class Program
     {
-        public static void Main(string[] args)//dotnet run command look for this main method
+        public static async Task Main(string[] args)//dotnet run command look for this main method
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            try
+            {
+                var context = services.GetRequiredService<DataContext>();
+                await context.Database.MigrateAsync();
+                await Seed.SeedUsers(context);
+            }
+            catch (System.Exception Ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(Ex, "An error occurred during migration");
+            }
+
+            await host.RunAsync();
         }
 
         // creates an instance of IHostBuilder which hosts a web application
