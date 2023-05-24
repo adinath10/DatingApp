@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { User } from '../_models/user';
 import { ReplaySubject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
 
-  baseUrl = "https://localhost:5000/api/";
+  baseUrl = environment.apiUrl;
+  // baseUrl = "https://localhost:5000/api/";
 
   //BehaviorSubject can hold only last data emitted in the memory whereas ReplaySubject can hold in memory as much as we define in the bufferSize.
   //The ReplaySubject is initialized with a buffer size of 1, which means it will store the last 1 values that have been passed to it. 
