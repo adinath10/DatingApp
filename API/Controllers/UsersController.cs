@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
@@ -31,7 +32,8 @@ namespace API.Controllers
         // https://localhost:5000/api/users
         // [AllowAnonymous] // don't ask the users to be authenticated whenever they want to access this ActionResult.
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers(){
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        {
             // ActionResult method works as a return type of any controller method in the MVC.
             // return await _context.Users.ToListAsync();
 
@@ -43,9 +45,25 @@ namespace API.Controllers
         // https://localhost:5000/api/users/1
         // [Authorize]
         [HttpGet("{username}")]
-        public async Task<ActionResult<MemberDto>> GetUser(string username){
+        public async Task<ActionResult<MemberDto>> GetUser(string username)
+        {
             // ActionResult method works as a return type of any controller method in the MVC.
             return await _userRepository.GetMemberAsync(username);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
+        {
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+
+            _mapper.Map(memberUpdateDto, user);
+
+            _userRepository.Update(user);
+
+            if(await _userRepository.SaveAllAsync()) return NoContent();
+
+            return BadRequest("Failed to update user");
         }
     }
 }
