@@ -13,10 +13,12 @@ namespace API.Extensions
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config){
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             // for Dependency Injection
             // With a scoped service we get the same instance within the scope of a given http request 
             // but a new instance across different http requests.
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddDbContext<DataContext>(options =>

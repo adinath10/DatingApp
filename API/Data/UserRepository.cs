@@ -62,6 +62,8 @@ namespace API.Data
 
         public void Update(AppUser user)
         {
+            // Entry method provide access to change tracking information 
+            // State is nothing but EntityState
             _context.Entry(user).State = EntityState.Modified;
         }
     }
