@@ -25,7 +25,7 @@ namespace API.Data
         {
            return await _context.Users
                 .Where(x => x.UserName == username)
-                    .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+                    .ProjectTo<MemberDto>(_mapper.ConfigurationProvider) // using projectTo we will retrieve the field which are present in MemberDto
                     .SingleOrDefaultAsync();
         }
 
