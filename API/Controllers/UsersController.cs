@@ -7,6 +7,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -36,12 +37,22 @@ namespace API.Controllers
         // https://localhost:5000/api/users
         // [AllowAnonymous] // don't ask the users to be authenticated whenever they want to access this ActionResult.
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
         {
             // ActionResult method works as a return type of any controller method in the MVC.
             // return await _context.Users.ToListAsync();
 
-            var users = await _userRepository.GetMembersAsync();
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+            userParams.CurrentUsername = user.UserName;
+
+            if(string.IsNullOrEmpty(userParams.Gender))
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+
+            var users = await _userRepository.GetMembersAsync(userParams);
+
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize,
+                users.TotalCount, users.TotalPages);
 
             return Ok(users);
         }
