@@ -3,9 +3,11 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Member } from '../_models/member';
 import { of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
+import { AccountService } from './account.service';
+import { User } from '../_models/user';
 
 // const httpOptions = {
 //   headers : new HttpHeaders({
@@ -20,23 +22,63 @@ export class MembersService {
 
   baseUrl = environment.apiUrl;
   members: Member[] = [];
+  memberCache = new Map();
+  user !: User;
+  userParams ?: UserParams;
   
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private accountService: AccountService) {
+    this.accountService.currentUser$.pipe(take(1)).subscribe(user => {
+      this.user = user;
+      this.userParams = new UserParams(user);
+    })
+   }
+
+  getUserParams(){
+    return this.userParams;
+  }
+
+  setUserParams(params : UserParams){
+    this.userParams = params
+  }
+
+  resetUserParams(){
+    this.userParams = new UserParams(this.user);
+    return this.userParams
+  }
 
   getMembers(UserParams: UserParams){
+    var response = this.memberCache.get(Object.values(UserParams).join('-'));
+
+    if(response){
+      // of() converts the arguments to an observable sequence.
+      return of(response)
+    }
 
     let params = this.getPaginationHeaders(UserParams.pageNumber, UserParams.pageSize);
 
     params = params.append('minAge', UserParams.minAge.toString());
     params = params.append('maxAge', UserParams.maxAge.toString());
     params = params.append('gender', UserParams.gender);
+    params = params.append('orderBy', UserParams.orderBy);
 
+    // restoring the cache
     return this.getPaginatedResult<Member[]>(this.baseUrl + 'users' , params)
+      .pipe(map(response => {
+        this.memberCache.set(Object.values(UserParams).join('-'), response);
+        return response
+      }))
   }
 
   getMember(username : string){
-    const member = this.members.find(x => x.username === username);
-    if(member !== undefined)  return of(member);
+    // const member = this.members.find(x => x.username === username);
+    // if(member !== undefined)  return of(member);
+    const member = [...this.memberCache.values()]
+      .reduce((arr, elem) => arr.concat(elem.result), [])
+      .find((member: Member) => member.username === username);
+    
+    if(member){
+      return of(member);
+    }
     return this.http.get<Member>(this.baseUrl + 'users/' + username);
   }
 
