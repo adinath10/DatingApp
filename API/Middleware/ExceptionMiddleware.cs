@@ -15,7 +15,7 @@ namespace API.Middleware
         private readonly IHostEnvironment _env;
 
         // The RequestDelegate is a delegate method which handles the request. 
-        // ILogger is used top log the exceptions
+        // ILogger is used to log the exceptions
         //  env is used to check the current environment i.e Development or production
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
         {

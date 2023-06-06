@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
@@ -12,7 +6,6 @@ using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -21,7 +14,6 @@ namespace API.Controllers
     [Authorize]
     public class UsersController : BaseApiController
     {
-        // private readonly DataContext _context;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
@@ -31,11 +23,11 @@ namespace API.Controllers
             _mapper = mapper;
             _userRepository = userRepository;
             _photoService = photoService;
-            // _context = context;
         }
 
         // https://localhost:5000/api/users
         // [AllowAnonymous] // don't ask the users to be authenticated whenever they want to access this ActionResult.
+        // [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
         {
@@ -58,7 +50,7 @@ namespace API.Controllers
         }
 
         // https://localhost:5000/api/users/1
-        // [Authorize]
+        // [Authorize(Roles = "Member")]
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
