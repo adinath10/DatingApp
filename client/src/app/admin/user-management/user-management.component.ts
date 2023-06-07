@@ -11,8 +11,8 @@ import { RolesModalComponent } from 'src/app/modals/roles-modal/roles-modal.comp
 })
 export class UserManagementComponent implements OnInit {
 
-  users ?: Partial<User[]>;
-  bsModalRef ?: BsModalRef;
+  users?: Partial<User[]>;
+  bsModalRef?: BsModalRef;
 
   constructor(private adminService: AdminService, private modalService: BsModalService) { }
 
@@ -20,26 +20,59 @@ export class UserManagementComponent implements OnInit {
     this.getUsersWithRoles();
   }
 
-  getUsersWithRoles(){
+  getUsersWithRoles() {
     this.adminService.getUsersWithRoles().subscribe(users => {
       this.users = users;
     })
   }
 
-  openRolesModal(){
-    const initialState: ModalOptions = {
+  openRolesModal(user: User) {
+    const config: any = {
+      class: 'modal-dialog-centered',
       initialState: {
-        list: [
-          'Open a modal with component',
-          'Pass your data',
-          'Do something else',
-          '...'
-        ],
-        title: 'Modal with component'
+        user,
+        roles : this.getRolesArray(user)
       }
-    };
-    // this.bsModalRef = this.modalService.show(RolesModalComponent, {initialState});
-    // this.bsModalRef.content.closeBtnName = 'Close';
+    }
+    this.bsModalRef = this.modalService.show(RolesModalComponent, config);
+    this.bsModalRef.content.updateSelectedRoles.subscribe((values : any) => {
+      const rolesToUpdate = {
+        roles: [...values.filter((el:any) => el.checked === true).map((el:any)  => el.name)]
+      };
+      if(rolesToUpdate){
+        this.adminService.updateUserRoles(user.username, rolesToUpdate.roles).subscribe(() => {
+          user.roles = [...rolesToUpdate.roles]
+        })
+      }
+    });
+  };
+
+  private getRolesArray(user: User) {
+    const roles : any[] = [];
+    const userRoles = user.roles;
+    const availableRoles: any[] = [
+      { name: 'Admin', value: 'Admin' },
+      { name: 'Moderator', value: 'Moderator' },
+      { name: 'Member', value: 'Member' },
+    ]
+
+    availableRoles.forEach(role => {
+      let isMatch = false;
+      for (const userRole of userRoles) {
+        if (role.name === userRole) {
+          isMatch = true;
+          role.checked = true;
+          roles.push(role);
+          break;
+        }
+      }
+      if (!isMatch) {
+        role.checked = false;
+        roles.push(role);
+      }
+    })
+    return roles;
   }
 
 }
+
