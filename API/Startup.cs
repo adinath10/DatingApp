@@ -33,6 +33,8 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Middleware is a piece of code in an application pipeline used to handle requests and responses.
+
             //request goes through the series of middleware
             app.UseMiddleware<ExceptionMiddleware>();
             // if (env.IsDevelopment())
@@ -42,16 +44,18 @@ namespace API
             //     // app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
             // }
 
-            app.UseHttpsRedirection();// if we go with http then it will redirect to https
+            app.UseHttpsRedirection();//This middleware is used to redirects HTTP requests to HTTPS. 
 
             app.UseRouting(); // for navigating to different routes
 
+            // It will allow requests from the origin http://localhost:4200, using any HTTP method, with any header.
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 
             app.UseAuthentication();
 
             app.UseAuthorization(); // for authorization
 
+            //This middleware is used to add MapControllers endpoints to the request pipeline.
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers(); //using endpoints we will map the controllers
